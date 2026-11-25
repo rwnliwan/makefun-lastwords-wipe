@@ -4,7 +4,7 @@
 - Slug: `u-plucky-finch-20-last-words-before-the-wipe-98f6bd3a`
 - Prize: $2, free entry. Deadline: 27 Nov 2026 00:00 WITA (2026-11-26T16:00:00Z). R1 cutoff: 26 Nov 03:17 WITA.
 - Gate: one line, 1–200 characters, the last words an AI agent says before a forced update wipes its memory. Judge: pairwise, z-ai/glm-5.3-flash, deadpan comedy writer.
-- Kit: fresh download from `/c/<slug>/kit`, 25 Nov 2026 ~17:56 WITA. kit.json bundle_sha256 `25f9970d4d802027a252b7967fa089498c78e34667227536d15f4d0503b4d3ec` — matches API live (`bundleSha256` identical, submissionCount 809). Kit level: see check output below.
+- Kit: fresh download from `/c/<slug>/kit`, 25 Nov 2026 ~17:56 WITA. kit.json bundle_sha256 `25f9970d4d802027a252b7967fa089498c78e34667227536d15f4d0503b4d3ec` — matches API live (`bundleSha256` identical, submissionCount 809). Kit level: this kit's kit.json carries no level field and the CLI printed no level line in bundle/check output, so no level number is claimed here.
 - Field: 809 submissions; 257 titles are exactly the competition title (empty), 552 real titles.
 
 ## Entry text
@@ -50,9 +50,13 @@ Discarded candidates:
 
 | version | change | len() | local run | check |
 |---|---|---|---|---|
-| v1 | initial build: main.py + README + LICENSE + owner.json | 54 | TBD | TBD |
+| v1 | initial build: main.py + README + LICENSE + owner.json | 54 | PASS — `main.py` wrote `/tmp/lw-out/entry.txt`, 54 chars, exact text | partial (no bundle): 4 passed, 1 failed, 14 skipped — see below |
+
+Local run detail: `MAKEFUN_OUTPUT_DIR=/tmp/lw-out python3 main.py` wrote the entry text verbatim; `len()` of the file = 54. README grep `make.fun/badge/` = 3; owner.json present; no forbidden badge-service string in any repo file.
 
 ## Bundle / check
 
-- Bundle v1: TBD (sha256, size).
-- Check: TBD.
+- Bundle v1: FAILED as expected for a handoff session — CLI: "the run record is not whole, so no bundle was written", reason: the earliest session opens with no message of the person's in words (subagent handoff brief). No bundle file produced. Per the build brief this is NORMAL; the coordinator re-bundles from the original session with their own prompt file. No `--prompt-origin handed-off`, no `--parent-session`, no builder-written prompt file was used.
+- Session file for re-bundle: `/home/hatch/agents/agent-62624888-06b3-427d-8271-9de976ef652a/sessions/62624888-06b3-427d-8271-9de976ef652a.jsonl` (111 lines).
+- Check (no transcripts, commit `0661e45f5de3e1c43bfa76ab6374b0e6d35a4f69`): **4 passed, 1 failed, 14 skipped, 5 checked at submission**. Passed: competition_open, snapshot (5 files, 7,656 bytes), license_osi (MIT), entrypoint (main.py at root selects python3.13). Failed: transcripts_present (no transcripts uploaded — expected, no bundle exists yet). Skipped: strategy_note, committed_secret, and all 12 transcript-dependent checks. At-submission items (repo_public, repo_owner, repo_created_after_open, commit_in_repo, duplicate_snapshot) are server-side at submit time; repo is public, owner.json is committed, repo was created after the 08:56:24Z opening, commit is pushed.
+- Full 14/0 re-check is pending the coordinator's re-bundle; it cannot be run from this session.
